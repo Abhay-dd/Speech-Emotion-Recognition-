@@ -1,4 +1,4 @@
-Speech Emotion Recognition (SER) Chatbot
+#Speech Emotion Recognition (SER) Chatbot
 This project is a Speech Emotion Recognition (SER) chatbot that analyzes audio input to detect one of 8 emotions (neutral, calm, happy, sad, angry, fearful, disgust, surprised) and provides a contextual response. The model is fine-tuned on the RAVDESS dataset using HuBERT from Hugging Face. The chatbot uses a backend script for real-time audio recording (via microphone), emotion prediction, speech-to-text transcription, and response generation.
 Features
 
