@@ -1,130 +1,113 @@
-#Speech Emotion Recognition (SER) Chatbot
-This project is a Speech Emotion Recognition (SER) chatbot that analyzes audio input to detect one of 8 emotions (neutral, calm, happy, sad, angry, fearful, disgust, surprised) and provides a contextual response. The model is fine-tuned on the RAVDESS dataset using HuBERT from Hugging Face. The chatbot uses a backend script for real-time audio recording (via microphone), emotion prediction, speech-to-text transcription, and response generation.
-Features
+Speech Emotion Recognition (SER) Chatbot
 
-Records 4-second audio clips from the microphone.
-Predicts emotions using a fine-tuned HuBERT model.
-Transcribes speech to text using Google Speech Recognition.
-Generates simple responses based on the detected emotion (e.g., "You sound excited!" for happy).
-No frontend (console-based for simplicity).
+How to Use the SER Chatbot Project (ZIP File Guide)
 
-Prerequisites
+Speech Emotion Recognition (SER) Chatbot project! This guide provides everything you need to set up, run, and troubleshoot the project. The ZIP contains the core code files only (no dataset or trained model, as they are large and must be downloaded separately). The project analyzes 4-second audio recordings to detect emotions (neutral, calm, happy, sad, angry, fearful, disgust, surprised) using a fine-tuned HuBERT model trained on the RAVDESS dataset, transcribes speech to text, and generates responses.
 
-Python 3.9+
-A microphone for audio input.
-The RAVDESS dataset (download instructions below).
-Internet access for speech-to-text (Google API).
+Project Overview:
 
-Installation
+Backend-Only: Console-based for simplicity (no web interface).
+Dataset: RAVDESS speech audio (~11,520 files from 24 actors, 8 emotions).
+Accuracy: ~75-85% on test set after training.
+Time: Dataset preparation ~5 minutes, training ~2-3 hours on CPU.
 
-Clone the repository:
-bashgit clone <your-repo-url>
-cd SER_Project
+1. Prerequisites
+   OS: macOS, Linux, or Windows.
+   Python: 3.9+ (check with python --version).
+   Microphone: For real-time audio input.
+   Internet: For speech-to-text (Google API) and downloads.
+   Tools: Git (optional), Homebrew (for macOS dependencies).
+2. Installation
+   Extract the ZIP:
+     Unzip the file to a folder (e.g., SER_Project).
+     Navigate to it:
+     #cd SER_Project
+   Create a Virtual Environment (Recommended):
+     Create:
+     #python -m venv .venv
+     Activate:
+     macOS/Linux:  #source .venv/bin/activate
+     Windows:  #.venv\Scripts\activate
+   Install Libraries:
+     Install pip upgrades:  #pip install --upgrade pip
+     Install from requirements.txt:  #pip install -r requirements.txt
+   macOS Note: If pyaudio fails, install portaudio:  #brew install portaudio
+     pip install pyaudio
+3. Download the Dataset
+   The dataset is not included in the ZIP (to keep it small). Download and extract it manually.
+   Download Link:
+   Primary : https://zenodo.org/records/1188976/files/Audio_Speech_Actors_01-24.zip
+   Alternative : https://www.kaggle.com/datasets/uwrfkaggler/ravdess-emotional-speech-audio
 
-Create and activate a virtual environment:
-bashpython -m venv .venv
-source .venv/bin/activate  # On macOS/Linux
-# or .venv\Scripts\activate on Windows
+   Extract:
+     Unzip to data/raw_ravdess/ in the project folder : unzip Audio_Speech_Actors_01-24.zip -d data/raw_ravdess/
+   #mv data/raw_ravdess/*/Actor_* data/raw_ravdess/
+   Structure: data/raw_ravdess/Actor_01/ to Actor_24/, with files like 03-01-01-01-01-01-01.wav (speech, vocal channel 01).
+   Verify : #ls data/raw_ravdess/
+  #ls data/raw_ravdess/Actor_01/ | head -5
+  #find data/raw_ravdess/ -name "03-01-*.wav" | wc -l
 
-Install the required libraries from requirements.txt:
-bashpip install -r requirements.txt
+  Expect: 24 actor folders, ~144 speech files per actor, ~11,520 total 03-01-*.wav files.
+  
+4. Usage
+  Prepare Dataset:  #python prepare_dataset.py
+  Output: Creates data/train/ (~9,216 files) and data/test/ (~2,304 files), organized by emotion (e.g., data/train/happy/).
+  Time: ~5 minutes.
 
+  Train the Model :  #python train_ser.py
+  
+  Output: Fine-tunes HuBERT for 3 epochs, saves to finetuned_ser_ravdess/. Expected accuracy ~75-85% on test set.
+  Time: ~2-3 hours on CPU, ~20-30 minutes on GPU.
+  Note: Requires internet for initial model download.
+  
+  Run the Chatbot :  #python main.py
 
-Required Libraries (requirements.txt)
-The following libraries are used (installed via requirements.txt):
-
-transformers==4.44.2: For loading and using the HuBERT model and feature extractor.
-torch==2.4.1: PyTorch for model inference.
-SpeechRecognition==3.14.3: For speech-to-text transcription using Google API.
-pyaudio==0.2.14: For microphone audio input.
-datasets==3.0.0: For dataset loading during training.
-soundfile==0.12.1: For reading/writing audio files.
-librosa==0.10.2.post1: For audio processing utilities.
-evaluate==0.4.3: For accuracy metrics during training.
-accelerate==1.0.0: For optimized training.
-scikit-learn==1.5.1: For train-test splitting in dataset preparation.
-numpy==1.26.4: For numerical operations.
-
-Note: pyaudio may require additional setup on macOS (install portaudio via brew install portaudio if build errors occur).
-Dataset
-
-The project uses the RAVDESS (Ryerson Audio-Visual Database of Emotional Speech and Song) dataset, specifically the speech portion (~1.2 GB ZIP, ~11,520 speech files from 24 actors, 8 emotions).
-Link: Download Audio_Speech_Actors_01-24.zip from Zenodo or Kaggle.
-Extraction: Extract the ZIP to data/raw_ravdess/ in the project directory. The structure should be data/raw_ravdess/Actor_01/ to Actor_24/, with files like 03-01-01-01-01-01-01.wav (speech, vocal channel 01).
-
-Note: Do not upload the dataset to GitHub (it's large and publicly available). Users should download it separately.
-Usage
-
-Prepare the Dataset:
-bashpython prepare_dataset.py
-
-This filters speech files (03-01-), maps to emotions, and splits into data/train/ (~9,216 files) and data/test/ (~2,304 files), organized by emotion.
-
-
-Train the Model:
-bashpython train_ser.py
-
-Fine-tunes HuBERT for 3 epochs (~2-3 hours on CPU, ~20-30 min on GPU).
-Saves the model to finetuned_ser_ravdess/ (expected accuracy ~75-85% on test set).
-
-
-Run the Chatbot:
-bashpython main.py
-
-Press Enter to record 4 seconds of audio.
-Outputs detected emotion, transcribed text, and response in the console.
-Type 'quit' to exit.
+  Interaction:
+    Prompt: SER Chatbot: Press Enter to record audio (4 seconds). Type 'quit' to exit.
+    Press Enter to record (speak into microphone).
 
 
+    Sample Output:
+    Recording...
+Recording finished.
 
-Project Structure
+Detected emotion: happy
 
-prepare_dataset.py: Processes the RAVDESS dataset into train/test splits.
-train_ser.py: Fine-tunes the HuBERT model on the dataset.
-main.py: Backend script for real-time audio recording, emotion prediction, speech-to-text, and response generation.
-requirements.txt: List of dependencies for installation.
-README.md: This file (project documentation).
-.gitignore: Excludes data folders, model outputs, and virtual environment.
-data/: Contains raw and processed dataset (not uploaded; download separately).
-finetuned_ser_ravdess/: Contains trained model files (not uploaded; train locally).
+You said: I am happy today
 
-Note: Only code files are uploaded to GitHub. Download the dataset and train the model locally.
-Notes
+You sound excited! What's got you in such a great mood?
 
-Training requires a GPU for efficiency.
-The chatbot uses Google Speech Recognition, which requires internet access.
-For microphone issues, install portaudio via Homebrew on macOS.
-The urllib3 warning can be ignored or fixed by upgrading urllib3 and installing OpenSSL via brew install openssl.
+Type quit or control+c to exit.
 
-If you encounter errors, check the virtual environment and dependencies. For help, open an issue on the GitHub repo.
+Time: Real-time (~4 seconds per recording).
 
-What to Upload to GitHub
+5. Troubleshooting
+   "ModuleNotFoundError" (e.g., SpeechRecognition)
+   Reinstall: #pip install SpeechRecognition==3.14.3.
+   Import: Ensure import speech_recognition as sr in main.py.
 
-prepare_dataset.py (copy from previous responses).
-train_ser.py (copy from previous responses).
-main.py (the backend-only version you provided).
-requirements.txt (as listed above).
-README.md (the content I provided above).
-.gitignore (from previous responses, to exclude data/, finetuned_ser_ravdess/, .venv/, etc.).
+   Microphone Not Working : 
+   Install pyaudio: #pip install pyaudio.
+   macOS: brew install portaudio then reinstall pyaudio.
+   Check permissions in System Preferences > Security & Privacy > Microphone.
 
-Do not upload:
+   "FileNotFoundError" for Dataset : 
+   Download/extract RAVDESS to data/raw_ravdess/ (see Step 3).
 
-data/ (large dataset).
-finetuned_ser_ravdess/ (large model files).
-.venv/ (virtual environment).
-temp_audio.wav (temporary file).
+   Training Fails : 
+   Ensure dataset is prepared (ls data/train/).
+   Use GPU if available (check python -c "import torch; print(torch.cuda.is_available())").
+   Reduce batch size in train_ser.py if memory error.
 
-How to Upload to GitHub
+   "urllib3 NotOpenSSLWarning" : 
+   Ignore or fix: pip install --upgrade urllib3; brew install openssl.
 
-Create a repository on GitHub (e.g., "ser-chatbot").
-Initialize Git in your project directory:
-bashcd /Users/abhaydileep/Desktop/SER_Project
-git init
-git add .
-git commit -m "Initial commit for SER Chatbot"
-git remote add origin https://github.com/<your-username>/ser-chatbot.git
-git push -u origin main
+   No Output from main.py :
+   Verify model: ls finetuned_ser_ravdess/ (rerun train_ser.py if missing).
+   Test microphone: python -c "import pyaudio; p = pyaudio.PyAudio(); print(p.get_device_count())".
 
-Add a license (e.g., MIT) and update the repo description on GitHub.
-
-This setup allows anyone to see and use the code by downloading the dataset, installing libraries, preparing data, training the model, and running the chatbot. Let me know if you need help with any part! (It’s 12:49 AM IST, September 23, 2025—proceed as needed.)
+6. Additional Notes
+   Accuracy: ~75-85% on test set; depends on training data quality.
+   Customization: Modify main.py to change recording duration or response logic.
+   Extensions: Add a frontend (e.g., Gradio/Streamlit) or deploy to Hugging Face Spaces.
+   
