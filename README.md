@@ -1,6 +1,6 @@
 Speech Emotion Recognition (SER) Chatbot
 
-How to Use the SER Chatbot Project (ZIP File Guide)
+##How to Use the SER Chatbot Project (ZIP File Guide)
 
 Speech Emotion Recognition (SER) Chatbot project! This guide provides everything you need to set up, run, and troubleshoot the project. The ZIP contains the core code files only (no dataset or trained model, as they are large and must be downloaded separately). The project analyzes 4-second audio recordings to detect emotions (neutral, calm, happy, sad, angry, fearful, disgust, surprised) using a fine-tuned HuBERT model trained on the RAVDESS dataset, transcribes speech to text, and generates responses.
 
